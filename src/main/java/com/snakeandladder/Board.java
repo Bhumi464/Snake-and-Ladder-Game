@@ -1,7 +1,11 @@
+
 package com.snakeandladder;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -10,8 +14,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.util.Duration;
 
 public class Board {
@@ -19,12 +21,14 @@ public class Board {
     private static final int SIZE = 10;
     private static final int CELL_SIZE = 70;
 
+    private static final double TOKEN_OFFSET =
+            CELL_SIZE * 0.16;
+
     // ==================================
     // SNAKES
     // ==================================
 
     private final Snake[] snakes = {
-
         new Snake(99, 54),
         new Snake(95, 75),
         new Snake(70, 55),
@@ -37,7 +41,6 @@ public class Board {
     // ==================================
 
     private final Ladder[] ladders = {
-
         new Ladder(4, 25),
         new Ladder(13, 46),
         new Ladder(33, 49),
@@ -54,10 +57,6 @@ public class Board {
 
     private Pane overlay;
 
-    // Distance between two players when
-    // they are on the same cell.
-    private static final double TOKEN_OFFSET = CELL_SIZE * 0.16;
-
     // ==================================
     // CREATE BOARD
     // ==================================
@@ -68,21 +67,23 @@ public class Board {
 
         grid.setAlignment(Pos.CENTER);
 
-        // --------------------------------
-        // CREATE BOARD CELLS
-        // --------------------------------
-
-        for (int gridRow = 0; gridRow < SIZE; gridRow++) {
+        // Create the 100 numbered cells
+        for (int gridRow = 0;
+             gridRow < SIZE;
+             gridRow++) {
 
             int logicalRow = SIZE - 1 - gridRow;
 
             int startNumber =
                     logicalRow * SIZE + 1;
 
-            for (int col = 0; col < SIZE; col++) {
+            for (int col = 0;
+                 col < SIZE;
+                 col++) {
 
                 int cellNumber;
 
+                // Serpentine numbering
                 if (logicalRow % 2 == 0) {
 
                     cellNumber =
@@ -106,10 +107,7 @@ public class Board {
             }
         }
 
-        // --------------------------------
-        // OVERLAY
-        // --------------------------------
-
+        // Overlay for snakes, ladders and tokens
         overlay = new Pane();
 
         overlay.setPrefSize(
@@ -129,42 +127,36 @@ public class Board {
 
         overlay.setMouseTransparent(true);
 
-        // --------------------------------
-        // SNAKES AND LADDERS
-        // --------------------------------
-
+        // Draw snakes and ladders
         addSnakes(overlay);
         addLadders(overlay);
 
-        // --------------------------------
-        // PLAYER TOKENS
-        // --------------------------------
-
+        // Create glossy player tokens
         player1Token =
-                createPlayerToken(Color.RED);
+                createPlayerToken(Color.CRIMSON);
 
         player2Token =
-                createPlayerToken(Color.BLUE);
+                createPlayerToken(Color.DODGERBLUE);
 
         overlay.getChildren().addAll(
                 player1Token,
                 player2Token
         );
 
-        // Initially hide tokens
-        // because position 0 is outside the board.
-
+        // Position zero is outside the board
         player1Token.setVisible(false);
         player2Token.setVisible(false);
 
-        // --------------------------------
-        // COMBINE BOARD + OVERLAY
-        // --------------------------------
-
-        StackPane board =
-                new StackPane();
+        // Add an outer frame around the board
+        StackPane board = new StackPane();
 
         board.setAlignment(Pos.CENTER);
+
+        board.setStyle(
+                "-fx-background-color: #244D3A;"
+                + "-fx-padding: 5;"
+                + "-fx-background-radius: 5;"
+        );
 
         board.getChildren().addAll(
                 grid,
@@ -175,7 +167,7 @@ public class Board {
     }
 
     // ==================================
-    // CELL
+    // CREATE CELL
     // ==================================
 
     private StackPane createCell(int number) {
@@ -186,46 +178,83 @@ public class Board {
                         CELL_SIZE
                 );
 
-        if (number % 2 == 0) {
+        // Special colors for start and finish
+        if (number == 1) {
 
             rectangle.setFill(
-                    Color.LIGHTBLUE
+                    Color.web("#B8E6A3")
+            );
+
+        } else if (number == 100) {
+
+            rectangle.setFill(
+                    Color.web("#FFD166")
+            );
+
+        } else if ((number / 10) % 2 == 0) {
+
+            rectangle.setFill(
+                    Color.web("#F5F0D8")
+            );
+
+        } else if (number % 2 == 0) {
+
+            rectangle.setFill(
+                    Color.web("#CDE8C5")
             );
 
         } else {
 
             rectangle.setFill(
-                    Color.LIGHTYELLOW
+                    Color.web("#E0F0D8")
             );
         }
 
         rectangle.setStroke(
-                Color.DARKGRAY
+                Color.web("#9CB99A")
         );
 
-        Label label =
-                new Label(
-                        String.valueOf(number)
-                );
+        rectangle.setStrokeWidth(1.2);
 
-        StackPane cell =
-                new StackPane();
+        Label label =
+                new Label(String.valueOf(number));
+
+        label.setStyle(
+                "-fx-font-size: 14px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: #294735;"
+        );
+
+        StackPane cell = new StackPane();
+
+        cell.setPrefSize(
+                CELL_SIZE,
+                CELL_SIZE
+        );
 
         cell.getChildren().addAll(
                 rectangle,
                 label
         );
 
+        // Highlight the beginning and finish
+        if (number == 1 || number == 100) {
+
+            label.setStyle(
+                    "-fx-font-size: 17px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-text-fill: #163D29;"
+            );
+        }
+
         return cell;
     }
 
     // ==================================
-    // PLAYER TOKEN
+    // CREATE PLAYER TOKEN
     // ==================================
 
-    private Circle createPlayerToken(
-            Color color
-    ) {
+    private Circle createPlayerToken(Color color) {
 
         Circle token =
                 new Circle(
@@ -234,8 +263,18 @@ public class Board {
                 );
 
         token.setStroke(Color.WHITE);
+        token.setStrokeWidth(2.5);
 
-        token.setStrokeWidth(2);
+        DropShadow shadow = new DropShadow();
+
+        shadow.setRadius(5);
+        shadow.setOffsetX(1);
+        shadow.setOffsetY(2);
+        shadow.setColor(
+                Color.rgb(0, 0, 0, 0.35)
+        );
+
+        token.setEffect(shadow);
 
         return token;
     }
@@ -289,20 +328,9 @@ public class Board {
             Runnable onFinished
     ) {
 
-        Circle token;
-
-        if (playerOne) {
-
-            token = player1Token;
-
-        } else {
-
-            token = player2Token;
-        }
-
-        // IMPORTANT:
-        // Use the split position so that
-        // both players stay separated.
+        Circle token = playerOne
+                ? player1Token
+                : player2Token;
 
         double[] start =
                 getTokenPosition(
@@ -318,16 +346,12 @@ public class Board {
 
         token.setVisible(true);
 
-        Timeline timeline =
-                new Timeline();
+        Timeline timeline = new Timeline();
 
         int duration = 1200;
         int frames = 30;
 
-        // --------------------------------
-        // CHECK IF THIS IS A SNAKE
-        // --------------------------------
-
+        // Check whether the movement is a snake
         Snake selectedSnake = null;
 
         for (Snake snake : snakes) {
@@ -340,10 +364,7 @@ public class Board {
             }
         }
 
-        // --------------------------------
-        // SNAKE MOVEMENT
-        // --------------------------------
-
+        // SNAKE: curved movement
         if (selectedSnake != null) {
 
             double control1X =
@@ -366,19 +387,22 @@ public class Board {
 
             for (int i = 1; i <= frames; i++) {
 
-                double t =
-                        (double) i / frames;
+                double t = (double) i / frames;
 
                 double x =
                         Math.pow(1 - t, 3) * start[0]
-                        + 3 * Math.pow(1 - t, 2) * t * control1X
-                        + 3 * (1 - t) * Math.pow(t, 2) * control2X
+                        + 3 * Math.pow(1 - t, 2)
+                        * t * control1X
+                        + 3 * (1 - t) * Math.pow(t, 2)
+                        * control2X
                         + Math.pow(t, 3) * end[0];
 
                 double y =
                         Math.pow(1 - t, 3) * start[1]
-                        + 3 * Math.pow(1 - t, 2) * t * control1Y
-                        + 3 * (1 - t) * Math.pow(t, 2) * control2Y
+                        + 3 * Math.pow(1 - t, 2)
+                        * t * control1Y
+                        + 3 * (1 - t) * Math.pow(t, 2)
+                        * control2Y
                         + Math.pow(t, 3) * end[1];
 
                 double time =
@@ -391,7 +415,6 @@ public class Board {
                         new KeyFrame(
                                 Duration.millis(time),
                                 event -> {
-
                                     token.setLayoutX(finalX);
                                     token.setLayoutY(finalY);
                                 }
@@ -401,14 +424,10 @@ public class Board {
 
         } else {
 
-            // --------------------------------
-            // LADDER MOVEMENT
-            // --------------------------------
-
+            // LADDER: smooth upward movement
             for (int i = 1; i <= frames; i++) {
 
-                double t =
-                        (double) i / frames;
+                double t = (double) i / frames;
 
                 double x =
                         start[0]
@@ -428,7 +447,6 @@ public class Board {
                         new KeyFrame(
                                 Duration.millis(time),
                                 event -> {
-
                                     token.setLayoutX(finalX);
                                     token.setLayoutY(finalY);
                                 }
@@ -437,17 +455,12 @@ public class Board {
             }
         }
 
-        // --------------------------------
-        // ANIMATION FINISHED
-        // --------------------------------
-
         timeline.setOnFinished(event -> {
 
             token.setLayoutX(end[0]);
             token.setLayoutY(end[1]);
 
             if (onFinished != null) {
-
                 onFinished.run();
             }
         });
@@ -456,7 +469,7 @@ public class Board {
     }
 
     // ==================================
-    // MOVE TOKEN
+    // MOVE TOKEN DIRECTLY
     // ==================================
 
     private void moveToken(
@@ -468,7 +481,6 @@ public class Board {
         if (position <= 0) {
 
             token.setVisible(false);
-
             return;
         }
 
@@ -479,11 +491,9 @@ public class Board {
                 );
 
         token.setLayoutX(center[0]);
-
         token.setLayoutY(center[1]);
 
         token.setTranslateX(0);
-
         token.setTranslateY(0);
 
         token.setVisible(true);
@@ -525,7 +535,6 @@ public class Board {
             token.setVisible(false);
 
             if (onFinished != null) {
-
                 onFinished.run();
             }
 
@@ -534,10 +543,7 @@ public class Board {
 
         token.setVisible(true);
 
-        // --------------------------------
-        // NO MOVEMENT
-        // --------------------------------
-
+        // No movement
         if (oldPosition == newPosition) {
 
             moveToken(
@@ -547,35 +553,25 @@ public class Board {
             );
 
             if (onFinished != null) {
-
                 onFinished.run();
             }
 
             return;
         }
 
-        Timeline timeline =
-                new Timeline();
+        Timeline timeline = new Timeline();
 
         int direction =
-                newPosition >= oldPosition
-                        ? 1
-                        : -1;
+                newPosition >= oldPosition ? 1 : -1;
 
         int steps =
-                Math.abs(
-                        newPosition - oldPosition
-                );
+                Math.abs(newPosition - oldPosition);
 
-        // --------------------------------
-        // MOVE ONE CELL AT A TIME
-        // --------------------------------
-
+        // Move one square at a time
         for (int i = 1; i <= steps; i++) {
 
             int position =
-                    oldPosition
-                    + (i * direction);
+                    oldPosition + (i * direction);
 
             KeyFrame keyFrame =
                     new KeyFrame(
@@ -588,25 +584,17 @@ public class Board {
                                                 playerOne
                                         );
 
-                                token.setLayoutX(
-                                        center[0]
-                                );
-
-                                token.setLayoutY(
-                                        center[1]
-                                );
+                                token.setLayoutX(center[0]);
+                                token.setLayoutY(center[1]);
                             }
                     );
 
-            timeline.getKeyFrames().add(
-                    keyFrame
-            );
+            timeline.getKeyFrames().add(keyFrame);
         }
 
         timeline.setOnFinished(event -> {
 
             if (onFinished != null) {
-
                 onFinished.run();
             }
         });
@@ -626,17 +614,7 @@ public class Board {
         double[] center =
                 getCellCenter(number);
 
-        /*
-         * If Player 1 and Player 2 are
-         * on the same cell:
-         *
-         * Player 1 -> slightly LEFT
-         * Player 2 -> slightly RIGHT
-         *
-         * This keeps both tokens visible
-         * inside the same cell.
-         */
-
+        // Keep both players visible in the same cell
         if (playerOne) {
 
             center[0] -= TOKEN_OFFSET;
@@ -650,7 +628,7 @@ public class Board {
     }
 
     // ==================================
-    // SNAKES
+    // DRAW SNAKES
     // ==================================
 
     private void addSnakes(Pane overlay) {
@@ -695,8 +673,8 @@ public class Board {
                 head[1]
                 + (tail[1] - head[1]) * 0.75;
 
-        CubicCurve snakeBody =
-                new CubicCurve();
+        // Snake body
+        CubicCurve snakeBody = new CubicCurve();
 
         snakeBody.setStartX(head[0]);
         snakeBody.setStartY(head[1]);
@@ -713,39 +691,33 @@ public class Board {
         snakeBody.setFill(null);
 
         snakeBody.setStroke(
-                Color.DARKRED
+                Color.web("#D94F45")
         );
 
         snakeBody.setStrokeWidth(12);
-
         snakeBody.setMouseTransparent(true);
 
-        overlay.getChildren().add(
-                snakeBody
-        );
+        overlay.getChildren().add(snakeBody);
 
-        // --------------------------------
-        // SNAKE HEAD
-        // --------------------------------
-
+        // Snake head
         Circle headCircle =
                 new Circle(
                         head[0],
                         head[1],
                         14,
-                        Color.DARKRED
+                        Color.web("#B52F38")
                 );
 
-        headCircle.setMouseTransparent(true);
-
-        overlay.getChildren().add(
-                headCircle
+        headCircle.setStroke(
+                Color.web("#76252A")
         );
 
-        // --------------------------------
-        // EYES
-        // --------------------------------
+        headCircle.setStrokeWidth(1.5);
+        headCircle.setMouseTransparent(true);
 
+        overlay.getChildren().add(headCircle);
+
+        // Eyes
         Circle leftEye =
                 new Circle(
                         head[0] - 5,
@@ -762,14 +734,32 @@ public class Board {
                         Color.WHITE
                 );
 
+        Circle leftPupil =
+                new Circle(
+                        head[0] - 5,
+                        head[1] - 4,
+                        1.3,
+                        Color.BLACK
+                );
+
+        Circle rightPupil =
+                new Circle(
+                        head[0] + 5,
+                        head[1] - 4,
+                        1.3,
+                        Color.BLACK
+                );
+
         overlay.getChildren().addAll(
                 leftEye,
-                rightEye
+                rightEye,
+                leftPupil,
+                rightPupil
         );
     }
 
     // ==================================
-    // LADDERS
+    // DRAW LADDERS
     // ==================================
 
     private void addLadders(Pane overlay) {
@@ -796,28 +786,16 @@ public class Board {
         double[] top =
                 getCellCenter(topNumber);
 
-        double dx =
-                top[0] - bottom[0];
-
-        double dy =
-                top[1] - bottom[1];
+        double dx = top[0] - bottom[0];
+        double dy = top[1] - bottom[1];
 
         double length =
-                Math.sqrt(
-                        dx * dx
-                        + dy * dy
-                );
+                Math.sqrt(dx * dx + dy * dy);
 
-        double offsetX =
-                -dy / length * 10;
+        double offsetX = -dy / length * 10;
+        double offsetY = dx / length * 10;
 
-        double offsetY =
-                dx / length * 10;
-
-        // --------------------------------
-        // LEFT RAIL
-        // --------------------------------
-
+        // Left rail
         Line leftRail =
                 new Line(
                         bottom[0] + offsetX,
@@ -826,10 +804,7 @@ public class Board {
                         top[1] + offsetY
                 );
 
-        // --------------------------------
-        // RIGHT RAIL
-        // --------------------------------
-
+        // Right rail
         Line rightRail =
                 new Line(
                         bottom[0] - offsetX,
@@ -839,25 +814,30 @@ public class Board {
                 );
 
         leftRail.setStroke(
-                Color.DARKGREEN
+                Color.web("#21865B")
         );
 
         rightRail.setStroke(
-                Color.DARKGREEN
+                Color.web("#21865B")
         );
 
         leftRail.setStrokeWidth(6);
         rightRail.setStrokeWidth(6);
+
+        leftRail.setStrokeLineCap(
+                javafx.scene.shape.StrokeLineCap.ROUND
+        );
+
+        rightRail.setStrokeLineCap(
+                javafx.scene.shape.StrokeLineCap.ROUND
+        );
 
         overlay.getChildren().addAll(
                 leftRail,
                 rightRail
         );
 
-        // --------------------------------
-        // RUNGS
-        // --------------------------------
-
+        // Golden ladder rungs
         int numberOfRungs = 5;
 
         for (int i = 1;
@@ -865,16 +845,13 @@ public class Board {
              i++) {
 
             double ratio =
-                    (double) i
-                    / (numberOfRungs + 1);
+                    (double) i / (numberOfRungs + 1);
 
             double centerX =
-                    bottom[0]
-                    + dx * ratio;
+                    bottom[0] + dx * ratio;
 
             double centerY =
-                    bottom[1]
-                    + dy * ratio;
+                    bottom[1] + dy * ratio;
 
             Line rung =
                     new Line(
@@ -885,14 +862,16 @@ public class Board {
                     );
 
             rung.setStroke(
-                    Color.DARKGREEN
+                    Color.web("#E6AE42")
             );
 
             rung.setStrokeWidth(5);
 
-            overlay.getChildren().add(
-                    rung
+            rung.setStrokeLineCap(
+                    javafx.scene.shape.StrokeLineCap.ROUND
             );
+
+            overlay.getChildren().add(rung);
         }
     }
 
@@ -900,9 +879,7 @@ public class Board {
     // GET CELL CENTER
     // ==================================
 
-    private double[] getCellCenter(
-            int number
-    ) {
+    private double[] getCellCenter(int number) {
 
         int logicalRow =
                 (number - 1) / SIZE;
@@ -917,14 +894,12 @@ public class Board {
 
         if (logicalRow % 2 == 0) {
 
-            column =
-                    positionInRow;
+            column = positionInRow;
 
         } else {
 
             column =
-                    SIZE - 1
-                    - positionInRow;
+                    SIZE - 1 - positionInRow;
         }
 
         double x =
@@ -935,9 +910,6 @@ public class Board {
                 gridRow * CELL_SIZE
                 + CELL_SIZE / 2.0;
 
-        return new double[]{
-                x,
-                y
-        };
+        return new double[]{x, y};
     }
 }
