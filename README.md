@@ -4,6 +4,21 @@ A desktop **Snake & Ladder game** built with **Java, JavaFX, and
 Maven**. Play with two players, roll the dice, climb ladders, slide down
 snakes, and race to square 100.
 
+
+
+## 🖼️ Game Screenshots
+
+### Game Board
+![Snake and Ladder Game Board](Screenshots/game-board.png)
+
+### Gameplay
+![Snake and Ladder Gameplay](Screenshots/gameplay.png)
+
+### Winner Celebration
+![Winner Celebration](Screenshots/winner-screen.png)
+
+
+
 ## ✨ Features
 
 -   **Two-player gameplay** with separate colored player tokens.
