@@ -1,4 +1,3 @@
-
 package com.snakeandladder;
 
 import java.util.Random;
@@ -67,41 +66,48 @@ public class App extends Application {
         board = new Board();
         soundManager = new SoundManager();
 
-        historyItems =
-                FXCollections.observableArrayList();
+        historyItems
+                = FXCollections.observableArrayList();
 
         BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: #F2F6EE;");
         root.setPadding(new Insets(20));
 
         // TITLE
-        Label title =
-                new Label("🐍 Snake & Ladder 🪜");
+        Label title
+                = new Label("🐍 Snake & Ladder 🪜");
 
         title.setStyle(
                 "-fx-font-size: 32px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-text-fill: #174B35;"
+                + "-fx-padding: 10 0 15 0;"
         );
 
         // PLAYER INFORMATION
-        player1Label =
-                new Label("🔴 Player 1: Position 0");
+        player1Label
+                = new Label("🔴 Player 1: Position 0");
 
         player1Label.setStyle(
-                "-fx-font-size: 18px;"
+                "-fx-font-size: 17px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-text-fill: #C62828;"
+                + "-fx-padding: 8;"
         );
 
-        player2Label =
-                new Label("🔵 Player 2: Position 0");
+        player2Label
+                = new Label("🔵 Player 2: Position 0");
 
         player2Label.setStyle(
-                "-fx-font-size: 18px;"
+                "-fx-font-size: 17px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-text-fill: #1565C0;"
+                + "-fx-padding: 8;"
         );
 
         // TURN LABEL
-        turnLabel =
-                new Label("Player 1's Turn");
+        turnLabel
+                = new Label("Player 1's Turn");
 
         turnLabel.setStyle(
                 "-fx-font-size: 21px;"
@@ -122,15 +128,13 @@ public class App extends Application {
         );
 
         // DICE MESSAGE
-        diceLabel =
-                new Label("🎲 Roll the dice!");
+        diceLabel
+                = new Label("🎲 Roll the dice!");
 
         diceLabel.setWrapText(true);
-        diceLabel.setMaxWidth(280);
-
-        diceLabel.setAlignment(
-                Pos.CENTER
-        );
+        diceLabel.setMaxWidth(300);
+        diceLabel.setMinHeight(55);
+        diceLabel.setAlignment(Pos.CENTER);
 
         diceLabel.setStyle(
                 "-fx-font-size: 20px;"
@@ -138,8 +142,8 @@ public class App extends Application {
         );
 
         // ROLL BUTTON
-        rollButton =
-                new Button("🎲 ROLL DICE");
+        rollButton
+                = new Button("🎲 ROLL DICE");
 
         rollButton.setPrefWidth(190);
         rollButton.setPrefHeight(55);
@@ -147,11 +151,15 @@ public class App extends Application {
         rollButton.setStyle(
                 "-fx-font-size: 17px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-background-color: #21865B;"
+                + "-fx-text-fill: white;"
+                + "-fx-background-radius: 12;"
+                + "-fx-cursor: hand;"
         );
 
         // NEW GAME BUTTON
-        newGameButton =
-                new Button("🔄 NEW GAME");
+        newGameButton
+                = new Button("🔄 NEW GAME");
 
         newGameButton.setPrefWidth(190);
         newGameButton.setPrefHeight(55);
@@ -159,11 +167,15 @@ public class App extends Application {
         newGameButton.setStyle(
                 "-fx-font-size: 17px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-background-color: #F0B84B;"
+                + "-fx-text-fill: #26382B;"
+                + "-fx-background-radius: 12;"
+                + "-fx-cursor: hand;"
         );
 
         // SOUND ON/OFF BUTTON
-        soundButton =
-                new Button("🔊 SOUND: ON");
+        soundButton
+                = new Button("🔊 SOUND: ON");
 
         soundButton.setPrefWidth(190);
         soundButton.setPrefHeight(45);
@@ -171,10 +183,14 @@ public class App extends Application {
         soundButton.setStyle(
                 "-fx-font-size: 16px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-background-color: #DCEBDD;"
+                + "-fx-text-fill: #174B35;"
+                + "-fx-background-radius: 12;"
+                + "-fx-cursor: hand;"
         );
 
-        soundStatusLabel =
-                new Label("Sound effects enabled");
+        soundStatusLabel
+                = new Label("Sound effects enabled");
 
         soundStatusLabel.setStyle(
                 "-fx-font-size: 14px;"
@@ -182,8 +198,8 @@ public class App extends Application {
 
         soundButton.setOnAction(event -> {
 
-            boolean turnSoundOn =
-                    !soundManager.isEnabled();
+            boolean turnSoundOn
+                    = !soundManager.isEnabled();
 
             soundManager.setEnabled(turnSoundOn);
 
@@ -206,23 +222,29 @@ public class App extends Application {
         });
 
         // GAME HISTORY
-        Label historyTitle =
-                new Label("📜 Game History");
+        Label historyTitle
+                = new Label("📜 Game History");
 
         historyTitle.setStyle(
                 "-fx-font-size: 20px;"
                 + "-fx-font-weight: bold;"
         );
 
-        historyList =
-                new ListView<>(historyItems);
+        historyList
+                = new ListView<>(historyItems);
 
-        historyList.setPrefSize(300, 240);
-        historyList.setMinHeight(180);
+        historyList.setPrefSize(300, 180);
+        historyList.setMinHeight(120);
+        historyList.setMaxHeight(180);
 
         historyList.setStyle(
-                "-fx-font-size: 14px;"
-        );
+    "-fx-font-size: 13px;"
+    + "-fx-control-inner-background: #FFFFFF;"
+    + "-fx-background-color: #FFFFFF;"
+    + "-fx-border-color: #C8DCC8;"
+    + "-fx-border-radius: 8;"
+    + "-fx-background-radius: 8;"
+);
 
         // ROLL DICE ACTION
         rollButton.setOnAction(event -> {
@@ -231,17 +253,17 @@ public class App extends Application {
             newGameButton.setDisable(true);
             soundButton.setDisable(true);
 
-            Player currentPlayer =
-                    game.getCurrentPlayer();
+            Player currentPlayer
+                    = game.getCurrentPlayer();
 
-            int oldPosition =
-                    currentPlayer.getPosition();
+            int oldPosition
+                    = currentPlayer.getPosition();
 
-            int roll =
-                    game.rollDice();
+            int roll
+                    = game.rollDice();
 
-            int newPosition =
-                    currentPlayer.getPosition();
+            int newPosition
+                    = currentPlayer.getPosition();
 
             animateDiceRoll(
                     roll,
@@ -275,14 +297,14 @@ public class App extends Application {
         );
 
         // SIDE PANEL
-        VBox sidePanel = new VBox(18);
+        VBox sidePanel = new VBox(12);
 
         sidePanel.setAlignment(
                 Pos.CENTER
         );
 
         sidePanel.setPadding(
-                new Insets(20)
+                new Insets(12, 16, 12, 16)
         );
 
         sidePanel.setPrefWidth(320);
@@ -302,6 +324,7 @@ public class App extends Application {
         );
 
         root.setTop(title);
+        BorderPane.setMargin(title, new Insets(10, 0, 20, 0));
 
         BorderPane.setAlignment(
                 title,
@@ -317,15 +340,15 @@ public class App extends Application {
         confettiPane.setPickOnBounds(false);
 
         // WINNER CARD
-        Label trophyLabel =
-                new Label("🏆");
+        Label trophyLabel
+                = new Label("🏆");
 
         trophyLabel.setStyle(
                 "-fx-font-size: 76px;"
         );
 
-        Label congratulationsLabel =
-                new Label("CONGRATULATIONS!");
+        Label congratulationsLabel
+                = new Label("CONGRATULATIONS!");
 
         congratulationsLabel.setStyle(
                 "-fx-font-size: 28px;"
@@ -333,8 +356,8 @@ public class App extends Application {
                 + "-fx-text-fill: #174B35;"
         );
 
-        winnerLabel =
-                new Label("Player 1 WINS!");
+        winnerLabel
+                = new Label("Player 1 WINS!");
 
         winnerLabel.setWrapText(true);
 
@@ -348,15 +371,15 @@ public class App extends Application {
                 + "-fx-text-fill: #B8860B;"
         );
 
-        Label finishedLabel =
-                new Label("You reached square 100!");
+        Label finishedLabel
+                = new Label("You reached square 100!");
 
         finishedLabel.setStyle(
                 "-fx-font-size: 17px;"
         );
 
-        Button playAgainButton =
-                new Button("🎲 PLAY AGAIN");
+        Button playAgainButton
+                = new Button("🎲 PLAY AGAIN");
 
         playAgainButton.setPrefWidth(220);
         playAgainButton.setPrefHeight(50);
@@ -401,8 +424,8 @@ public class App extends Application {
                 playAgainButton
         );
 
-        StackPane winnerOverlay =
-                new StackPane();
+        StackPane winnerOverlay
+                = new StackPane();
 
         winnerOverlay.setStyle(
                 "-fx-background-color: rgba(0, 0, 0, 0.72);"
@@ -433,22 +456,21 @@ public class App extends Application {
                 Pos.CENTER
         );
 
-        Scene scene =
-                new Scene(
-                        appRoot,
-                        1200,
-                        850
-                );
+        Scene scene = new Scene(
+                appRoot,
+                1400,
+                900
+        );
 
         stage.setTitle("Snake & Ladder Game");
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
     }
 
     // ==================================
     // DICE ANIMATION AND SOUND
     // ==================================
-
     private void animateDiceRoll(
             int actualRoll,
             Runnable onFinished
@@ -469,8 +491,8 @@ public class App extends Application {
                             Duration.millis(time),
                             event -> {
 
-                                int randomIndex =
-                                        random.nextInt(6);
+                                int randomIndex
+                                = random.nextInt(6);
 
                                 diceFaceLabel.setText(
                                         diceFaces[randomIndex]
@@ -503,7 +525,6 @@ public class App extends Application {
     // ==================================
     // GAME HISTORY
     // ==================================
-
     private void addHistory(String message) {
 
         historyItems.add(message);
@@ -516,7 +537,6 @@ public class App extends Application {
     // ==================================
     // UPDATE PLAYER INFORMATION
     // ==================================
-
     private void updatePlayerInformation() {
 
         player1Label.setText(
@@ -533,7 +553,6 @@ public class App extends Application {
     // ==================================
     // NORMAL PLAYER MOVEMENT
     // ==================================
-
     private void animatePlayerMove(
             Player player,
             int oldPosition,
@@ -542,8 +561,8 @@ public class App extends Application {
 
         Runnable afterMovement = () -> {
 
-            int finalPosition =
-                    game.checkSnakeOrLadder(newPosition);
+            int finalPosition
+                    = game.checkSnakeOrLadder(newPosition);
 
             if (finalPosition != newPosition) {
 
@@ -625,7 +644,6 @@ public class App extends Application {
     // ==================================
     // SNAKE / LADDER MOVEMENT
     // ==================================
-
     private void animateSnakeOrLadder(
             Player player,
             int oldPosition,
@@ -652,7 +670,6 @@ public class App extends Application {
     // ==================================
     // FINISH TURN
     // ==================================
-
     private void finishTurn(Player player) {
 
         updatePlayerInformation();
@@ -697,7 +714,6 @@ public class App extends Application {
     // ==================================
     // WINNER CELEBRATION
     // ==================================
-
     private void showWinnerCelebration(Player player) {
 
         winnerShown = true;
@@ -708,8 +724,8 @@ public class App extends Application {
 
         soundManager.playWin();
 
-        StackPane overlay =
-                (StackPane) appRoot.getChildren().get(2);
+        StackPane overlay
+                = (StackPane) appRoot.getChildren().get(2);
 
         overlay.setManaged(true);
         overlay.setVisible(true);
@@ -720,7 +736,6 @@ public class App extends Application {
     // ==================================
     // CONFETTI
     // ==================================
-
     private void createConfetti() {
 
         confettiPane.getChildren().clear();
@@ -745,8 +760,8 @@ public class App extends Application {
 
         for (int i = 0; i < 100; i++) {
 
-            Rectangle piece =
-                    new Rectangle(
+            Rectangle piece
+                    = new Rectangle(
                             8 + random.nextInt(7),
                             10 + random.nextInt(10)
                     );
@@ -772,8 +787,8 @@ public class App extends Application {
 
             confettiPane.getChildren().add(piece);
 
-            TranslateTransition fall =
-                    new TranslateTransition(
+            TranslateTransition fall
+                    = new TranslateTransition(
                             Duration.millis(
                                     2200 + random.nextInt(1800)
                             ),
@@ -786,8 +801,8 @@ public class App extends Application {
                     random.nextInt(240) - 120
             );
 
-            FadeTransition fade =
-                    new FadeTransition(
+            FadeTransition fade
+                    = new FadeTransition(
                             Duration.millis(3500),
                             piece
                     );
@@ -795,8 +810,8 @@ public class App extends Application {
             fade.setFromValue(1.0);
             fade.setToValue(0.25);
 
-            ParallelTransition animation =
-                    new ParallelTransition(fall, fade);
+            ParallelTransition animation
+                    = new ParallelTransition(fall, fade);
 
             animation.setDelay(
                     Duration.millis(
@@ -804,8 +819,8 @@ public class App extends Application {
                     )
             );
 
-            animation.setOnFinished(event ->
-                    confettiPane.getChildren().remove(piece)
+            animation.setOnFinished(event
+                    -> confettiPane.getChildren().remove(piece)
             );
 
             animation.play();
@@ -815,7 +830,6 @@ public class App extends Application {
     // ==================================
     // RESET GAME
     // ==================================
-
     private void resetGame() {
 
         if (diceAnimation != null) {
@@ -841,8 +855,8 @@ public class App extends Application {
 
         winnerShown = false;
 
-        StackPane overlay =
-                (StackPane) appRoot.getChildren().get(2);
+        StackPane overlay
+                = (StackPane) appRoot.getChildren().get(2);
 
         overlay.setVisible(false);
         overlay.setManaged(false);
@@ -853,7 +867,6 @@ public class App extends Application {
     // ==================================
     // MAIN
     // ==================================
-
     public static void main(String[] args) {
         launch(args);
     }

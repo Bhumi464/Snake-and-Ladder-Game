@@ -1,4 +1,3 @@
-
 package com.snakeandladder;
 
 import javafx.animation.KeyFrame;
@@ -19,15 +18,14 @@ import javafx.util.Duration;
 public class Board {
 
     private static final int SIZE = 10;
-    private static final int CELL_SIZE = 70;
+    private static final int CELL_SIZE = 58;
 
-    private static final double TOKEN_OFFSET =
-            CELL_SIZE * 0.16;
+    private static final double TOKEN_OFFSET
+            = CELL_SIZE * 0.16;
 
     // ==================================
     // SNAKES
     // ==================================
-
     private final Snake[] snakes = {
         new Snake(99, 54),
         new Snake(95, 75),
@@ -39,7 +37,6 @@ public class Board {
     // ==================================
     // LADDERS
     // ==================================
-
     private final Ladder[] ladders = {
         new Ladder(4, 25),
         new Ladder(13, 46),
@@ -51,7 +48,6 @@ public class Board {
     // ==================================
     // PLAYER TOKENS
     // ==================================
-
     private Circle player1Token;
     private Circle player2Token;
 
@@ -60,7 +56,6 @@ public class Board {
     // ==================================
     // CREATE BOARD
     // ==================================
-
     public StackPane createBoard() {
 
         GridPane grid = new GridPane();
@@ -69,35 +64,35 @@ public class Board {
 
         // Create the 100 numbered cells
         for (int gridRow = 0;
-             gridRow < SIZE;
-             gridRow++) {
+                gridRow < SIZE;
+                gridRow++) {
 
             int logicalRow = SIZE - 1 - gridRow;
 
-            int startNumber =
-                    logicalRow * SIZE + 1;
+            int startNumber
+                    = logicalRow * SIZE + 1;
 
             for (int col = 0;
-                 col < SIZE;
-                 col++) {
+                    col < SIZE;
+                    col++) {
 
                 int cellNumber;
 
                 // Serpentine numbering
                 if (logicalRow % 2 == 0) {
 
-                    cellNumber =
-                            startNumber + col;
+                    cellNumber
+                            = startNumber + col;
 
                 } else {
 
-                    cellNumber =
-                            startNumber
+                    cellNumber
+                            = startNumber
                             + (SIZE - 1 - col);
                 }
 
-                StackPane cell =
-                        createCell(cellNumber);
+                StackPane cell
+                        = createCell(cellNumber);
 
                 grid.add(
                         cell,
@@ -132,11 +127,11 @@ public class Board {
         addLadders(overlay);
 
         // Create glossy player tokens
-        player1Token =
-                createPlayerToken(Color.CRIMSON);
+        player1Token
+                = createPlayerToken(Color.CRIMSON);
 
-        player2Token =
-                createPlayerToken(Color.DODGERBLUE);
+        player2Token
+                = createPlayerToken(Color.DODGERBLUE);
 
         overlay.getChildren().addAll(
                 player1Token,
@@ -154,8 +149,10 @@ public class Board {
 
         board.setStyle(
                 "-fx-background-color: #244D3A;"
-                + "-fx-padding: 5;"
                 + "-fx-background-radius: 5;"
+                + "-fx-border-color: #183D2C;"
+                + "-fx-border-width: 4;"
+                + "-fx-border-radius: 5;"
         );
 
         board.getChildren().addAll(
@@ -169,11 +166,10 @@ public class Board {
     // ==================================
     // CREATE CELL
     // ==================================
-
     private StackPane createCell(int number) {
 
-        Rectangle rectangle =
-                new Rectangle(
+        Rectangle rectangle
+                = new Rectangle(
                         CELL_SIZE,
                         CELL_SIZE
                 );
@@ -216,8 +212,8 @@ public class Board {
 
         rectangle.setStrokeWidth(1.2);
 
-        Label label =
-                new Label(String.valueOf(number));
+        Label label
+                = new Label(String.valueOf(number));
 
         label.setStyle(
                 "-fx-font-size: 14px;"
@@ -253,11 +249,10 @@ public class Board {
     // ==================================
     // CREATE PLAYER TOKEN
     // ==================================
-
     private Circle createPlayerToken(Color color) {
 
-        Circle token =
-                new Circle(
+        Circle token
+                = new Circle(
                         CELL_SIZE * 0.20,
                         color
                 );
@@ -282,7 +277,6 @@ public class Board {
     // ==================================
     // MOVE PLAYER 1
     // ==================================
-
     public void movePlayer1Animated(
             int oldPosition,
             int newPosition,
@@ -301,7 +295,6 @@ public class Board {
     // ==================================
     // MOVE PLAYER 2
     // ==================================
-
     public void movePlayer2Animated(
             int oldPosition,
             int newPosition,
@@ -320,143 +313,85 @@ public class Board {
     // ==================================
     // SNAKE / LADDER ANIMATION
     // ==================================
-
     public void movePlayerAlongSnakeOrLadderAnimated(
             boolean playerOne,
             int oldPosition,
             int newPosition,
             Runnable onFinished
     ) {
+        Circle token = playerOne ? player1Token : player2Token;
 
-        Circle token = playerOne
-                ? player1Token
-                : player2Token;
-
-        double[] start =
-                getTokenPosition(
-                        oldPosition,
-                        playerOne
-                );
-
-        double[] end =
-                getTokenPosition(
-                        newPosition,
-                        playerOne
-                );
+        double[] start = getTokenPosition(oldPosition, playerOne);
+        double[] end = getTokenPosition(newPosition, playerOne);
 
         token.setVisible(true);
 
         Timeline timeline = new Timeline();
 
-        int duration = 1200;
-        int frames = 30;
+        int frames = 40;
+        int duration = 1400;
 
-        // Check whether the movement is a snake
-        Snake selectedSnake = null;
+        boolean isSnake = false;
 
         for (Snake snake : snakes) {
-
             if (snake.getHead() == oldPosition
                     && snake.getTail() == newPosition) {
-
-                selectedSnake = snake;
+                isSnake = true;
                 break;
             }
         }
 
-        // SNAKE: curved movement
-        if (selectedSnake != null) {
+        double dx = end[0] - start[0];
+        double dy = end[1] - start[1];
+        double distance = Math.sqrt(dx * dx + dy * dy);
 
-            double control1X =
-                    start[0]
-                    + (end[0] - start[0]) * 0.25
-                    + 35;
+        // Unit vector perpendicular to the movement direction
+        double perpendicularX = distance == 0 ? 0 : -dy / distance;
+        double perpendicularY = distance == 0 ? 0 : dx / distance;
 
-            double control1Y =
-                    start[1]
-                    + (end[1] - start[1]) * 0.25;
+        for (int i = 1; i <= frames; i++) {
+            final double t = (double) i / frames;
 
-            double control2X =
-                    start[0]
-                    + (end[0] - start[0]) * 0.75
-                    - 35;
+            double x;
+            double y;
 
-            double control2Y =
-                    start[1]
-                    + (end[1] - start[1]) * 0.75;
+            if (isSnake) {
+                // Winding movement down the snake
+                double bend = Math.sin(t * Math.PI * 4)
+                        * Math.sin(t * Math.PI)
+                        * 18;
 
-            for (int i = 1; i <= frames; i++) {
+                x = start[0] + dx * t + perpendicularX * bend;
+                y = start[1] + dy * t + perpendicularY * bend;
 
-                double t = (double) i / frames;
+            } else {
+                // Climb the ladder in small alternating steps
+                // Climb steadily along the ladder
+                double step = Math.sin(t * Math.PI * 8)
+                        * Math.sin(t * Math.PI)
+                        * 1.5;
 
-                double x =
-                        Math.pow(1 - t, 3) * start[0]
-                        + 3 * Math.pow(1 - t, 2)
-                        * t * control1X
-                        + 3 * (1 - t) * Math.pow(t, 2)
-                        * control2X
-                        + Math.pow(t, 3) * end[0];
-
-                double y =
-                        Math.pow(1 - t, 3) * start[1]
-                        + 3 * Math.pow(1 - t, 2)
-                        * t * control1Y
-                        + 3 * (1 - t) * Math.pow(t, 2)
-                        * control2Y
-                        + Math.pow(t, 3) * end[1];
-
-                double time =
-                        (double) i / frames * duration;
-
-                final double finalX = x;
-                final double finalY = y;
-
-                timeline.getKeyFrames().add(
-                        new KeyFrame(
-                                Duration.millis(time),
-                                event -> {
-                                    token.setLayoutX(finalX);
-                                    token.setLayoutY(finalY);
-                                }
-                        )
-                );
+                x = start[0] + dx * t + perpendicularX * step;
+                y = start[1] + dy * t + perpendicularY * step;
             }
 
-        } else {
+            final double finalX = x;
+            final double finalY = y;
+            double time = (double) i / frames * duration;
 
-            // LADDER: smooth upward movement
-            for (int i = 1; i <= frames; i++) {
-
-                double t = (double) i / frames;
-
-                double x =
-                        start[0]
-                        + (end[0] - start[0]) * t;
-
-                double y =
-                        start[1]
-                        + (end[1] - start[1]) * t;
-
-                double time =
-                        (double) i / frames * duration;
-
-                final double finalX = x;
-                final double finalY = y;
-
-                timeline.getKeyFrames().add(
-                        new KeyFrame(
-                                Duration.millis(time),
-                                event -> {
-                                    token.setLayoutX(finalX);
-                                    token.setLayoutY(finalY);
-                                }
-                        )
-                );
-            }
+            timeline.getKeyFrames().add(
+                    new KeyFrame(
+                            Duration.millis(time),
+                            event -> {
+                                token.setLayoutX(finalX);
+                                token.setLayoutY(finalY);
+                            }
+                    )
+            );
         }
 
         timeline.setOnFinished(event -> {
-
+            // Always finish exactly at the destination
             token.setLayoutX(end[0]);
             token.setLayoutY(end[1]);
 
@@ -471,7 +406,6 @@ public class Board {
     // ==================================
     // MOVE TOKEN DIRECTLY
     // ==================================
-
     private void moveToken(
             Circle token,
             int position,
@@ -484,8 +418,8 @@ public class Board {
             return;
         }
 
-        double[] center =
-                getTokenPosition(
+        double[] center
+                = getTokenPosition(
                         position,
                         playerOne
                 );
@@ -502,7 +436,6 @@ public class Board {
     // ==================================
     // RESET TOKENS
     // ==================================
-
     public void resetTokens() {
 
         moveToken(
@@ -521,7 +454,6 @@ public class Board {
     // ==================================
     // NORMAL MOVEMENT ANIMATION
     // ==================================
-
     private void animateToken(
             Circle token,
             int oldPosition,
@@ -561,28 +493,28 @@ public class Board {
 
         Timeline timeline = new Timeline();
 
-        int direction =
-                newPosition >= oldPosition ? 1 : -1;
+        int direction
+                = newPosition >= oldPosition ? 1 : -1;
 
-        int steps =
-                Math.abs(newPosition - oldPosition);
+        int steps
+                = Math.abs(newPosition - oldPosition);
 
         // Move one square at a time
         for (int i = 1; i <= steps; i++) {
 
-            int position =
-                    oldPosition + (i * direction);
+            int position
+                    = oldPosition + (i * direction);
 
-            KeyFrame keyFrame =
-                    new KeyFrame(
+            KeyFrame keyFrame
+                    = new KeyFrame(
                             Duration.millis(i * 180),
                             event -> {
 
-                                double[] center =
-                                        getTokenPosition(
-                                                position,
-                                                playerOne
-                                        );
+                                double[] center
+                                = getTokenPosition(
+                                        position,
+                                        playerOne
+                                );
 
                                 token.setLayoutX(center[0]);
                                 token.setLayoutY(center[1]);
@@ -605,14 +537,13 @@ public class Board {
     // ==================================
     // GET TOKEN POSITION
     // ==================================
-
     private double[] getTokenPosition(
             int number,
             boolean playerOne
     ) {
 
-        double[] center =
-                getCellCenter(number);
+        double[] center
+                = getCellCenter(number);
 
         // Keep both players visible in the same cell
         if (playerOne) {
@@ -630,7 +561,6 @@ public class Board {
     // ==================================
     // DRAW SNAKES
     // ==================================
-
     private void addSnakes(Pane overlay) {
 
         for (Snake snake : snakes) {
@@ -649,28 +579,28 @@ public class Board {
             int tailNumber
     ) {
 
-        double[] head =
-                getCellCenter(headNumber);
+        double[] head
+                = getCellCenter(headNumber);
 
-        double[] tail =
-                getCellCenter(tailNumber);
+        double[] tail
+                = getCellCenter(tailNumber);
 
-        double control1X =
-                head[0]
+        double control1X
+                = head[0]
                 + (tail[0] - head[0]) * 0.25
                 + 35;
 
-        double control1Y =
-                head[1]
+        double control1Y
+                = head[1]
                 + (tail[1] - head[1]) * 0.25;
 
-        double control2X =
-                head[0]
+        double control2X
+                = head[0]
                 + (tail[0] - head[0]) * 0.75
                 - 35;
 
-        double control2Y =
-                head[1]
+        double control2Y
+                = head[1]
                 + (tail[1] - head[1]) * 0.75;
 
         // Snake body
@@ -700,8 +630,8 @@ public class Board {
         overlay.getChildren().add(snakeBody);
 
         // Snake head
-        Circle headCircle =
-                new Circle(
+        Circle headCircle
+                = new Circle(
                         head[0],
                         head[1],
                         14,
@@ -718,32 +648,32 @@ public class Board {
         overlay.getChildren().add(headCircle);
 
         // Eyes
-        Circle leftEye =
-                new Circle(
+        Circle leftEye
+                = new Circle(
                         head[0] - 5,
                         head[1] - 4,
                         3,
                         Color.WHITE
                 );
 
-        Circle rightEye =
-                new Circle(
+        Circle rightEye
+                = new Circle(
                         head[0] + 5,
                         head[1] - 4,
                         3,
                         Color.WHITE
                 );
 
-        Circle leftPupil =
-                new Circle(
+        Circle leftPupil
+                = new Circle(
                         head[0] - 5,
                         head[1] - 4,
                         1.3,
                         Color.BLACK
                 );
 
-        Circle rightPupil =
-                new Circle(
+        Circle rightPupil
+                = new Circle(
                         head[0] + 5,
                         head[1] - 4,
                         1.3,
@@ -761,7 +691,6 @@ public class Board {
     // ==================================
     // DRAW LADDERS
     // ==================================
-
     private void addLadders(Pane overlay) {
 
         for (Ladder ladder : ladders) {
@@ -780,24 +709,24 @@ public class Board {
             int topNumber
     ) {
 
-        double[] bottom =
-                getCellCenter(bottomNumber);
+        double[] bottom
+                = getCellCenter(bottomNumber);
 
-        double[] top =
-                getCellCenter(topNumber);
+        double[] top
+                = getCellCenter(topNumber);
 
         double dx = top[0] - bottom[0];
         double dy = top[1] - bottom[1];
 
-        double length =
-                Math.sqrt(dx * dx + dy * dy);
+        double length
+                = Math.sqrt(dx * dx + dy * dy);
 
         double offsetX = -dy / length * 10;
         double offsetY = dx / length * 10;
 
         // Left rail
-        Line leftRail =
-                new Line(
+        Line leftRail
+                = new Line(
                         bottom[0] + offsetX,
                         bottom[1] + offsetY,
                         top[0] + offsetX,
@@ -805,8 +734,8 @@ public class Board {
                 );
 
         // Right rail
-        Line rightRail =
-                new Line(
+        Line rightRail
+                = new Line(
                         bottom[0] - offsetX,
                         bottom[1] - offsetY,
                         top[0] - offsetX,
@@ -841,20 +770,20 @@ public class Board {
         int numberOfRungs = 5;
 
         for (int i = 1;
-             i <= numberOfRungs;
-             i++) {
+                i <= numberOfRungs;
+                i++) {
 
-            double ratio =
-                    (double) i / (numberOfRungs + 1);
+            double ratio
+                    = (double) i / (numberOfRungs + 1);
 
-            double centerX =
-                    bottom[0] + dx * ratio;
+            double centerX
+                    = bottom[0] + dx * ratio;
 
-            double centerY =
-                    bottom[1] + dy * ratio;
+            double centerY
+                    = bottom[1] + dy * ratio;
 
-            Line rung =
-                    new Line(
+            Line rung
+                    = new Line(
                             centerX + offsetX,
                             centerY + offsetY,
                             centerX - offsetX,
@@ -878,17 +807,16 @@ public class Board {
     // ==================================
     // GET CELL CENTER
     // ==================================
-
     private double[] getCellCenter(int number) {
 
-        int logicalRow =
-                (number - 1) / SIZE;
+        int logicalRow
+                = (number - 1) / SIZE;
 
-        int positionInRow =
-                (number - 1) % SIZE;
+        int positionInRow
+                = (number - 1) % SIZE;
 
-        int gridRow =
-                SIZE - 1 - logicalRow;
+        int gridRow
+                = SIZE - 1 - logicalRow;
 
         int column;
 
@@ -898,16 +826,16 @@ public class Board {
 
         } else {
 
-            column =
-                    SIZE - 1 - positionInRow;
+            column
+                    = SIZE - 1 - positionInRow;
         }
 
-        double x =
-                column * CELL_SIZE
+        double x
+                = column * CELL_SIZE
                 + CELL_SIZE / 2.0;
 
-        double y =
-                gridRow * CELL_SIZE
+        double y
+                = gridRow * CELL_SIZE
                 + CELL_SIZE / 2.0;
 
         return new double[]{x, y};
